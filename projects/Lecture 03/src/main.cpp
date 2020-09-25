@@ -53,6 +53,10 @@ void GlDebugMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsi
 
 GLFWwindow* window;
 
+void GlfwWindowResizedCallback(GLFWwindow* window, int width, int height) {
+	glViewport(0, 0, width, height);
+}
+
 bool initGLFW() {
 	if (glfwInit() == GLFW_FALSE) {
 		LOG_ERROR("Failed to initialize GLFW");
@@ -130,6 +134,7 @@ bool loadShaders() {
 int main() {
 
 
+
 	Logger::Init(); // We'll borrow the logger from the toolkit, but we need to initialize it
 
 	//Initialize GLFW
@@ -144,9 +149,7 @@ int main() {
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(GlDebugMessage, nullptr);
 
-	void GlfwWindowResizedCallback(GLFWwindow * window, int width, int height) {
-		glViewport(0, 0, width, height);
-	}
+	
 
 	static const GLfloat points[] = {
 		-0.5f, -0.5f, 0.5f,
