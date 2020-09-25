@@ -63,7 +63,7 @@ bool initGLFW() {
 	window = glfwCreateWindow(800, 800, "INFR1350U", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
-	// Set our window resized callback    
+	// Set our window resized callback
 	glfwSetWindowSizeCallback(window, GlfwWindowResizedCallback);
 
 	return true;
@@ -129,10 +129,6 @@ bool loadShaders() {
 
 int main() {
 
-	void GlfwWindowResizedCallback(GLFWwindow * window, int width, int height)
-	{
-		glViewport(0, 0, width, height);
-	}
 
 	Logger::Init(); // We'll borrow the logger from the toolkit, but we need to initialize it
 
@@ -147,6 +143,10 @@ int main() {
 	// Let OpenGL know that we want debug output, and route it to our handler function
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(GlDebugMessage, nullptr);
+
+	void GlfwWindowResizedCallback(GLFWwindow * window, int width, int height) {
+		glViewport(0, 0, width, height);
+	}
 
 	static const GLfloat points[] = {
 		-0.5f, -0.5f, 0.5f,
