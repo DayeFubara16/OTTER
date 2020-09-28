@@ -233,6 +233,11 @@ int main() {
 	shader->LoadShaderPartFromFile("shaders/frag_shader.glsl", GL_FRAGMENT_SHADER);
 	shader->Link();
 
+	Shader* shader2 = new Shader();
+	shader2->LoadShaderPartFromFile("shaders/vertex_shader.glsl", GL_VERTEX_SHADER);
+	shader2->LoadShaderPartFromFile("shaders/frag_shader2.glsl", GL_FRAGMENT_SHADER);
+	shader2->Link();
+
 	// GL states
 	glEnable(GL_DEPTH_TEST);
 
@@ -259,14 +264,17 @@ int main() {
 		vao->Bind();
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
+		shader2->Bind();
+
 		vao2->Bind();
 		glDrawElements(GL_TRIANGLES, interleaved_ibo->GetElementCount(), interleaved_ibo->GetElementType(), nullptr);
-		vao->UnBind();
+		vao2->UnBind();
 
 		glfwSwapBuffers(window);
 	}
 
 	delete shader;
+	delete shader2;
 	delete vao2;
 	delete interleaved_ibo;
 	delete interleaved_vbo;
