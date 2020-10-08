@@ -108,6 +108,20 @@ int main() {
 		0.0f, 0.0f, 1.0f
 	};
 
+	//3rd triangle
+
+	static const float points2[] = {
+		1.5f, 0.0f, 0.5f,
+		0.5f, 0.5f, -0.5f,
+		1.0f, -0.5f, 0.5f
+	};
+
+	static const float colors2[] = {
+		0.3f, 0.4f, 0.1f,
+		0.5f, 0.4f, 0.2f,
+		0.1f, 0.4f, 0.8f,
+	};
+
 	//VBO - Vertex buffer object
 	VertexBuffer::sptr posVbo = VertexBuffer::Create();    
 	posVbo->LoadData(points, 9);
@@ -120,12 +134,28 @@ int main() {
 		BufferAttribute(0, 3, GL_FLOAT, false, 0, NULL)
 	});
 
+	//VBO - Vertex buffer object
+	VertexBuffer::sptr posVbo2 = VertexBuffer::Create();
+	posVbo2->LoadData(points2, 9);
+
+	VertexBuffer::sptr color_vbo2 = VertexBuffer::Create();
+	color_vbo2->LoadData(colors2, 9);
+
+	VertexArrayObject::sptr vao3 = VertexArrayObject::Create();
+	vao3->AddVertexBuffer(posVbo2, {
+		BufferAttribute(0, 3, GL_FLOAT, false, 0, NULL)
+		});
+
+	vao3->AddVertexBuffer(color_vbo2, {
+		BufferAttribute(1, 3, GL_FLOAT, false, 0, NULL)
+		});
+
 	static const float interleaved[] = {
     //     X      Y     Z       R     G    B
-		 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f,  1.0f, 0.3f, 0.2f,
 		 0.5f,  0.5f, 0.0f,  0.3f, 0.2f, 0.5f,
-	    -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,
-		 0.5f,  1.0f, 0.0f,  1.0f, 1.0f, 1.0f
+	    -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.5f,
+		 0.5f,  1.0f, 0.0f,  1.0f, 0.3f, 0.8f
 	};
 
 	VertexBuffer::sptr interleaved_vbo = VertexBuffer::Create();
@@ -159,14 +189,15 @@ int main() {
 
 	glm::mat4 transform = glm::mat4(1.0f);
 	glm::mat4 transform2 = glm::mat4(1.0f);
+	glm::mat4 transform3 = glm::mat4(1.0f);
 
 	// Our high-precision timer
 	double lastFrame = glfwGetTime();
 
 
 	Camera::sptr camera = Camera::Create();
-	camera->SetPosition(glm::vec3(0, 1, -1));
-	camera->LookAt(glm::vec3(0.0f));
+	camera->SetPosition(glm::vec3(1, 1, -1));
+	camera->LookAt(glm::vec3(0.0f, 0.0f, 1.0f));
 	///// Game loop /////
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -176,6 +207,7 @@ int main() {
 		float dt = static_cast<float>(thisFrame - lastFrame);
 		transform = glm::rotate(glm::mat4(1.0f), static_cast<float>(thisFrame), glm::vec3(0, 0, 1));
 		transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, glm::sin(static_cast<float>(thisFrame))));
+		transform3 = glm::rotate(glm::mat4(1.0f), static_cast<float>(thisFrame), glm::vec3(0, 1, 1));
 
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -191,7 +223,12 @@ int main() {
 		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform2);
 		vao2->Bind();
 		glDrawElements(GL_TRIANGLES, interleaved_ibo->GetElementCount(), interleaved_ibo->GetElementType(), nullptr);
-		vao->UnBind();
+		vao2->UnBind();
+
+		shader->SetUniformMatrix("u_ModelViewProjection", camera->GetViewProjection() * transform3);
+		vao3->Bind();
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		vao3->UnBind();
 
 		glfwSwapBuffers(window);
 	}
